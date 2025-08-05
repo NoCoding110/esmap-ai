@@ -1,0 +1,54 @@
+name = "esmap-forecasting-models"
+main = "src/index.js"
+compatibility_date = "2024-03-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Variables for the worker
+[vars]
+ENVIRONMENT = "production"
+API_VERSION = "v1"
+MAX_TRAINING_TIME_MS = 300000
+MAX_INFERENCE_BATCH_SIZE = 1000
+
+# KV namespace for caching
+[[kv_namespaces]]
+binding = "CACHE"
+id = "daaa134b2c354ad9853bf7ced86d6c34"
+
+# D1 database for model metadata
+[[d1_databases]]
+binding = "DB"
+database_name = "esmap-forecasting-models"
+database_id = "07bae47c-8da8-4fec-9715-b9df39a6f6cb"
+
+# R2 bucket for model artifacts
+[[r2_buckets]]
+binding = "MODELS_BUCKET"
+bucket_name = "esmap-model-artifacts"
+
+# Durable Objects migrations
+[[migrations]]
+tag = "v1"
+new_classes = ["TrainingSession"]
+
+# Durable Objects for training sessions
+[[durable_objects.bindings]]
+name = "TRAINING_SESSIONS"
+class_name = "TrainingSession"
+
+# Cron trigger for model retraining
+# [[triggers.crons]]
+# cron = "0 2 * * 0"  # Weekly on Sunday at 2 AM (disabled for now)
+
+# Worker limits
+[limits]
+cpu_ms = 30000  # 30 seconds max execution time
+
+# Environment-specific settings
+[env.development]
+[env.development.vars]
+ENVIRONMENT = "development"
+
+[env.staging]
+[env.staging.vars]
+ENVIRONMENT = "staging"

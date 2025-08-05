@@ -1,0 +1,1363 @@
+/**
+ * Global Energy Data & Insights Platform
+ * 
+ * A comprehensive React application for displaying energy data, reports, and insights.
+ * This single-file application includes all components, routing, state management,
+ * and styling using React and Tailwind CSS.
+ * 
+ * Features:
+ * - Client-side hash-based routing
+ * - Interactive search and filtering
+ * - Data visualization with Chart.js
+ * - Responsive design
+ * - Tag-based navigation
+ * - Pagination controls
+ * - Loading states and error handling
+ */
+
+import React, { useState, useEffect, useRef } from 'react';
+import DataManagementDashboard from './src/components/DataManagement/DataManagementDashboard';
+
+// ============================================================================
+// MOCK DATA - Simulates API responses for the energy platform
+// ============================================================================
+
+/**
+ * Mock reports data - Array of energy reports with metadata
+ * Each report contains: id, title, category, date, author, tags, downloadUrl
+ */
+const mockReports = [
+  { 
+    id: 1, 
+    title: 'Global Renewable Energy Outlook 2024', 
+    category: 'Renewable Energy', 
+    date: '2024-01-15',
+    author: 'Energy Research Institute',
+    tags: ['renewable', 'solar', 'wind', 'global'],
+    downloadUrl: '/reports/renewable-outlook-2024.pdf'
+  },
+  { 
+    id: 2, 
+    title: 'Energy Access in Sub-Saharan Africa', 
+    category: 'Energy Access', 
+    date: '2024-02-20',
+    author: 'Development Energy Team',
+    tags: ['africa', 'access', 'rural', 'development'],
+    downloadUrl: '/reports/africa-energy-access.pdf'
+  },
+  { 
+    id: 3, 
+    title: 'Carbon Emission Trends Worldwide', 
+    category: 'Climate', 
+    date: '2024-03-10',
+    author: 'Climate Analytics Group',
+    tags: ['carbon', 'emissions', 'climate', 'trends'],
+    downloadUrl: '/reports/carbon-trends-2024.pdf'
+  },
+  { 
+    id: 4, 
+    title: 'Smart Grid Implementation Report', 
+    category: 'Infrastructure', 
+    date: '2024-04-05',
+    author: 'Grid Technology Division',
+    tags: ['smart-grid', 'technology', 'infrastructure'],
+    downloadUrl: '/reports/smart-grid-implementation.pdf'
+  },
+  { 
+    id: 5, 
+    title: 'Hydroelectric Power in Latin America', 
+    category: 'Hydroelectric', 
+    date: '2024-03-25',
+    author: 'Latin America Energy Council',
+    tags: ['hydroelectric', 'latin-america', 'renewable'],
+    downloadUrl: '/reports/hydro-latin-america.pdf'
+  },
+  { 
+    id: 6, 
+    title: 'Nuclear Energy Safety Standards 2024', 
+    category: 'Nuclear', 
+    date: '2024-04-12',
+    author: 'Nuclear Safety Commission',
+    tags: ['nuclear', 'safety', 'standards', 'regulation'],
+    downloadUrl: '/reports/nuclear-safety-2024.pdf'
+  },
+  { 
+    id: 7, 
+    title: 'Energy Storage Technologies Review', 
+    category: 'Storage', 
+    date: '2024-05-01',
+    author: 'Storage Technology Institute',
+    tags: ['storage', 'battery', 'technology', 'grid'],
+    downloadUrl: '/reports/energy-storage-review.pdf'
+  },
+  { 
+    id: 8, 
+    title: 'Offshore Wind Development in Europe', 
+    category: 'Wind Energy', 
+    date: '2024-04-28',
+    author: 'European Wind Association',
+    tags: ['offshore', 'wind', 'europe', 'marine'],
+    downloadUrl: '/reports/offshore-wind-europe.pdf'
+  },
+  { 
+    id: 9, 
+    title: 'Geothermal Energy Potential Assessment', 
+    category: 'Geothermal', 
+    date: '2024-05-15',
+    author: 'Geothermal Research Center',
+    tags: ['geothermal', 'renewable', 'potential', 'assessment'],
+    downloadUrl: '/reports/geothermal-potential.pdf'
+  },
+  { 
+    id: 10, 
+    title: 'Energy Efficiency in Buildings Report', 
+    category: 'Efficiency', 
+    date: '2024-05-20',
+    author: 'Building Energy Institute',
+    tags: ['efficiency', 'buildings', 'consumption', 'green'],
+    downloadUrl: '/reports/building-efficiency.pdf'
+  }
+];
+
+/**
+ * Mock report details - Detailed information for each report
+ * Contains: title, content, author, date, downloadUrl, aiSummary, keyPoints, tags
+ */
+const mockReportDetails = {
+  1: { 
+    title: 'Global Renewable Energy Outlook 2024', 
+    content: 'Comprehensive analysis of renewable energy trends across all major technologies and regions.',
+    author: 'Energy Research Institute',
+    date: '2024-01-15',
+    downloadUrl: '/reports/renewable-outlook-2024.pdf',
+    aiSummary: 'This report provides a comprehensive overview of the global renewable energy landscape, highlighting significant growth in solar and wind technologies. Key findings include a 15% increase in renewable capacity worldwide and projections for continued expansion through 2030.',
+    keyPoints: [
+      'Solar capacity increased by 22% globally in 2023',
+      'Wind energy showed 18% growth year-over-year',
+      'Cost reductions of 8-12% across major renewable technologies',
+      'Policy support remains crucial for market development',
+      'Energy storage integration becoming critical for grid stability'
+    ],
+    tags: ['renewable', 'solar', 'wind', 'global']
+  },
+  2: { 
+    title: 'Energy Access in Sub-Saharan Africa', 
+    content: 'Detailed study on energy accessibility challenges and solutions in Sub-Saharan African countries.',
+    author: 'Development Energy Team',
+    date: '2024-02-20',
+    downloadUrl: '/reports/africa-energy-access.pdf',
+    aiSummary: 'This study examines energy access challenges in Sub-Saharan Africa, where 600 million people still lack electricity. The report outlines innovative solutions including mini-grids, solar home systems, and mobile payment platforms that are transforming energy access.',
+    keyPoints: [
+      '600 million people in Sub-Saharan Africa lack electricity access',
+      'Mini-grid solutions show 40% cost reduction potential',
+      'Solar home systems reached 30 million households in 2023',
+      'Mobile payment platforms accelerating energy access adoption',
+      'Women-led energy enterprises showing promising results'
+    ],
+    tags: ['africa', 'access', 'rural', 'development']
+  },
+  3: { 
+    title: 'Carbon Emission Trends Worldwide', 
+    content: 'Analysis of global carbon emission patterns and reduction strategies across different sectors.',
+    author: 'Climate Analytics Group',
+    date: '2024-03-10',
+    downloadUrl: '/reports/carbon-trends-2024.pdf',
+    aiSummary: 'Global carbon emissions analysis reveals mixed progress in decarbonization efforts. While some sectors show significant reductions, others continue to increase emissions. The report emphasizes the urgent need for accelerated action across all sectors.',
+    keyPoints: [
+      'Global emissions decreased by 2% in 2023',
+      'Power sector emissions fell by 8% due to renewable growth',
+      'Transport emissions increased by 3% as travel resumed',
+      'Industrial emissions remained relatively stable',
+      'Carbon pricing mechanisms expanding globally'
+    ],
+    tags: ['carbon', 'emissions', 'climate', 'trends']
+  },
+  4: { 
+    title: 'Smart Grid Implementation Report', 
+    content: 'Assessment of smart grid deployment strategies and their impact on energy efficiency and reliability.',
+    author: 'Grid Technology Division',
+    date: '2024-04-05',
+    downloadUrl: '/reports/smart-grid-implementation.pdf',
+    aiSummary: 'Smart grid technologies are transforming electricity networks worldwide. This report analyzes successful implementations, highlighting benefits such as improved reliability, enhanced efficiency, and better integration of renewable energy sources.',
+    keyPoints: [
+      'Smart meter deployments reached 1.2 billion units globally',
+      'Grid reliability improved by 25% in smart grid areas',
+      'Renewable integration capacity increased by 30%',
+      'Customer engagement through smart technologies growing',
+      'Cybersecurity remains a critical implementation challenge'
+    ],
+    tags: ['smart-grid', 'technology', 'infrastructure']
+  },
+  5: { 
+    title: 'Hydroelectric Power in Latin America', 
+    content: 'Comprehensive analysis of hydroelectric power development and potential in Latin American countries.',
+    author: 'Latin America Energy Council',
+    date: '2024-03-25',
+    downloadUrl: '/reports/hydro-latin-america.pdf',
+    aiSummary: 'Latin America continues to lead in hydroelectric power generation, accounting for 23% of global capacity. This report examines opportunities for sustainable expansion while addressing environmental and social considerations.',
+    keyPoints: [
+      'Latin America holds 23% of global hydroelectric capacity',
+      'Brazil leads with 109 GW of installed capacity',
+      'Small-scale hydro projects gaining momentum',
+      'Environmental impact assessments becoming more stringent',
+      'Indigenous community engagement critical for project success'
+    ],
+    tags: ['hydroelectric', 'latin-america', 'renewable']
+  },
+  6: { 
+    title: 'Nuclear Energy Safety Standards 2024', 
+    content: 'Updated safety standards and protocols for nuclear energy facilities worldwide.',
+    author: 'Nuclear Safety Commission',
+    date: '2024-04-12',
+    downloadUrl: '/reports/nuclear-safety-2024.pdf',
+    aiSummary: 'Nuclear safety standards continue to evolve with technological advances and lessons learned from global operations. This report outlines updated protocols and emerging best practices for safe nuclear energy operations.',
+    keyPoints: [
+      'Updated safety protocols implemented across 450 reactors globally',
+      'Advanced reactor designs incorporate passive safety features',
+      'Regulatory frameworks strengthened in 15 countries',
+      'International cooperation on safety standards increased',
+      'Public acceptance tied closely to safety performance'
+    ],
+    tags: ['nuclear', 'safety', 'standards', 'regulation']
+  },
+  7: { 
+    title: 'Energy Storage Technologies Review', 
+    content: 'Comprehensive review of current and emerging energy storage technologies and their applications.',
+    author: 'Storage Technology Institute',
+    date: '2024-05-01',
+    downloadUrl: '/reports/energy-storage-review.pdf',
+    aiSummary: 'Energy storage technologies are rapidly advancing, with battery costs declining and new technologies emerging. This review covers current market leaders and promising future technologies that will enable greater renewable energy integration.',
+    keyPoints: [
+      'Battery storage costs declined by 14% in 2023',
+      'Lithium-ion technology still dominates with 95% market share',
+      'Long-duration storage solutions gaining commercial viability',
+      'Grid-scale storage installations doubled year-over-year',
+      'Alternative technologies like compressed air showing promise'
+    ],
+    tags: ['storage', 'battery', 'technology', 'grid']
+  },
+  8: { 
+    title: 'Offshore Wind Development in Europe', 
+    content: 'Analysis of offshore wind energy development trends and potential across European waters.',
+    author: 'European Wind Association',
+    date: '2024-04-28',
+    downloadUrl: '/reports/offshore-wind-europe.pdf',
+    aiSummary: 'Offshore wind development in Europe continues to accelerate, with record installations and ambitious expansion plans. This report examines market trends, technological advances, and policy frameworks driving growth.',
+    keyPoints: [
+      'Europe installed 3.8 GW of new offshore wind capacity in 2023',
+      'UK leads with 14.7 GW of total installed capacity',
+      'Floating wind technology opening new areas for development',
+      'Supply chain challenges constraining faster growth',
+      'Green hydrogen production creating new offshore opportunities'
+    ],
+    tags: ['offshore', 'wind', 'europe', 'marine']
+  },
+  9: { 
+    title: 'Geothermal Energy Potential Assessment', 
+    content: 'Evaluation of global geothermal energy resources and development opportunities.',
+    author: 'Geothermal Research Center',
+    date: '2024-05-15',
+    downloadUrl: '/reports/geothermal-potential.pdf',
+    aiSummary: 'Global geothermal energy assessment reveals significant untapped potential across various regions. Enhanced geothermal systems (EGS) technology is expanding viable locations beyond traditional geothermal hotspots.',
+    keyPoints: [
+      'Global geothermal capacity reached 16.7 GW in 2023',
+      'Enhanced geothermal systems expanding viable locations',
+      'Indonesia leads global geothermal development',
+      'Direct-use applications growing rapidly',
+      'Policy support needed for exploration phase investment'
+    ],
+    tags: ['geothermal', 'renewable', 'potential', 'assessment']
+  },
+  10: { 
+    title: 'Energy Efficiency in Buildings Report', 
+    content: 'Analysis of building energy consumption patterns and efficiency improvement strategies.',
+    author: 'Building Energy Institute',
+    date: '2024-05-20',
+    downloadUrl: '/reports/building-efficiency.pdf',
+    aiSummary: 'Buildings account for 40% of global energy consumption, making efficiency improvements critical for climate goals. This report examines successful retrofit programs and emerging technologies for reducing building energy use.',
+    keyPoints: [
+      'Buildings consume 40% of global energy production',
+      'Deep retrofits can reduce energy use by 50-90%',
+      'Smart building technologies showing 20% energy savings',
+      'Heat pumps adoption accelerating in residential sector',
+      'Green building certifications driving market transformation'
+    ],
+    tags: ['efficiency', 'buildings', 'consumption', 'green']
+  }
+};
+
+/**
+ * Mock statistics data - Platform metrics and topic distribution for charts
+ * Contains: totalReports, totalCountries, lastUpdated, activeProjects, topics
+ */
+const mockReportStats = {
+  totalReports: 156,
+  totalCountries: 94,
+  lastUpdated: '2024-05-20',
+  activeProjects: 23,
+  topics: {
+    'Renewable Energy': 45,
+    'Energy Access': 28,
+    'Climate Change': 22,
+    'Infrastructure': 18,
+    'Nuclear': 12,
+    'Storage': 15,
+    'Hydroelectric': 16
+  }
+};
+
+// ============================================================================
+// REUSABLE UI COMPONENTS
+// ============================================================================
+
+/**
+ * SearchBar Component
+ * 
+ * A form component with input field and search button that navigates to search results.
+ * 
+ * Props:
+ * - setSearchQuery: Function to update the search query state
+ * - onSearch: Function called when search is submitted, triggers navigation
+ * 
+ * Features:
+ * - Controlled input with local state
+ * - Form submission handling
+ * - Responsive design with Tailwind CSS
+ * - Focus states and transitions
+ */
+const SearchBar = ({ setSearchQuery, onSearch }) => {
+  // Local state for the input field value
+  const [localQuery, setLocalQuery] = useState('');
+
+  /**
+   * Handle form submission
+   * Prevents default form behavior and triggers search if query is not empty
+   */
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (localQuery.trim()) {
+      setSearchQuery(localQuery.trim());
+      onSearch(localQuery.trim());
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto">
+      <div className="flex rounded-lg shadow-lg bg-white overflow-hidden">
+        <input
+          type="text"
+          value={localQuery}
+          onChange={(e) => setLocalQuery(e.target.value)}
+          placeholder="Search for energy reports, topics, or regions..."
+          className="flex-1 px-6 py-4 text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
+        />
+        <button
+          type="submit"
+          className="px-8 py-4 bg-blue-600 text-white font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset transition-colors"
+        >
+          Search
+        </button>
+      </div>
+    </form>
+  );
+};
+
+/**
+ * TagList Component
+ * 
+ * Displays an array of tags as clickable, styled buttons.
+ * 
+ * Props:
+ * - tags: Array of tag strings to display
+ * - onTagClick: Function called when a tag is clicked, receives the tag value
+ * 
+ * Features:
+ * - Flexible layout with flex-wrap
+ * - Hover effects and transitions
+ * - Consistent styling across the application
+ */
+const TagList = ({ tags, onTagClick }) => {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {tags.map((tag, index) => (
+        <button
+          key={index}
+          onClick={() => onTagClick(tag)}
+          className="px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full hover:bg-blue-200 transition-colors cursor-pointer"
+        >
+          {tag}
+        </button>
+      ))}
+    </div>
+  );
+};
+
+/**
+ * ReportCard Component
+ * 
+ * Displays a single report's information in a card format with navigation capabilities.
+ * 
+ * Props:
+ * - report: Report object containing id, title, author, category, date, tags
+ * - onNavigate: Function for navigation, receives page and params
+ * 
+ * Features:
+ * - Click to navigate to report detail page
+ * - Tag clicks trigger search (event propagation stopped)
+ * - Hover effects and transitions
+ * - Responsive typography and spacing
+ */
+const ReportCard = ({ report, onNavigate }) => {
+  /**
+   * Handle card click - navigate to report detail page
+   */
+  const handleClick = () => {
+    onNavigate('report-detail', { id: report.id });
+  };
+
+  /**
+   * Handle tag click - navigate to search results for that tag
+   */
+  const handleTagClick = (tag) => {
+    onNavigate('search', { query: tag });
+  };
+
+  return (
+    <div
+      onClick={handleClick}
+      className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+    >
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-xl font-semibold text-gray-900 hover:text-blue-600 transition-colors">
+            {report.title}
+          </h3>
+          <p className="text-gray-600 mt-1">{report.author}</p>
+          <p className="text-sm text-gray-500 mt-1">
+            {report.category} • {new Date(report.date).toLocaleDateString()}
+          </p>
+        </div>
+        {/* Tag section - click events don't propagate to parent card */}
+        <div onClick={(e) => e.stopPropagation()}>
+          <TagList tags={report.tags} onTagClick={handleTagClick} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * DataVisualizationWidget Component
+ * 
+ * Renders a Chart.js bar chart showing the distribution of reports by topic.
+ * 
+ * Features:
+ * - Uses Chart.js library (must be loaded via CDN or package)
+ * - Responsive chart with custom styling
+ * - Cleanup on component unmount
+ * - Error handling for missing Chart.js library
+ */
+const DataVisualizationWidget = () => {
+  // Refs for canvas element and chart instance
+  const chartRef = useRef(null);
+  const chartInstance = useRef(null);
+
+  /**
+   * Initialize and update chart when component mounts or data changes
+   */
+  useEffect(() => {
+    // Check if Chart.js is available (loaded via CDN)
+    if (chartRef.current && window.Chart) {
+      const ctx = chartRef.current.getContext('2d');
+      
+      // Destroy existing chart instance to prevent memory leaks
+      if (chartInstance.current) {
+        chartInstance.current.destroy();
+      }
+
+      // Extract data from mock stats
+      const topics = mockReportStats.topics;
+      const labels = Object.keys(topics);
+      const data = Object.values(topics);
+
+      // Create new chart instance
+      chartInstance.current = new window.Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Number of Reports',
+            data: data,
+            // Color palette for bars
+            backgroundColor: [
+              '#3B82F6', '#10B981', '#F59E0B', '#EF4444',
+              '#8B5CF6', '#06B6D4', '#84CC16'
+            ],
+            borderColor: [
+              '#2563EB', '#059669', '#D97706', '#DC2626',
+              '#7C3AED', '#0891B2', '#65A30D'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false // Hide legend for cleaner look
+            },
+            title: {
+              display: true,
+              text: 'Reports by Topic',
+              font: {
+                size: 16,
+                weight: 'bold'
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 5
+              }
+            },
+            x: {
+              ticks: {
+                maxRotation: 45,
+                minRotation: 45
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Cleanup function - destroy chart when component unmounts
+    return () => {
+      if (chartInstance.current) {
+        chartInstance.current.destroy();
+      }
+    };
+  }, []);
+
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+      <div className="h-80">
+        <canvas ref={chartRef}></canvas>
+      </div>
+      {/* Fallback message if Chart.js is not loaded */}
+      {!window.Chart && (
+        <div className="h-80 flex items-center justify-center text-gray-500">
+          <p>Chart.js library not loaded. Please include Chart.js CDN.</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/**
+ * PaginationControls Component
+ * 
+ * Provides pagination navigation with previous/next buttons and page numbers.
+ * 
+ * Props:
+ * - currentPage: Current active page number
+ * - totalPages: Total number of pages available
+ * - onPageChange: Function called when page changes, receives new page number
+ * 
+ * Features:
+ * - Smart page number display (shows ellipsis for large page counts)
+ * - Previous/Next button with disabled states
+ * - Active page highlighting
+ * - Responsive design
+ */
+const PaginationControls = ({ currentPage, totalPages, onPageChange }) => {
+  const pages = [];
+  const maxVisiblePages = 5;
+  
+  // Calculate which page numbers to show
+  let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+  let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+  
+  // Adjust start page if we're near the end
+  if (endPage - startPage + 1 < maxVisiblePages) {
+    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+  }
+
+  // Build array of page numbers to display
+  for (let i = startPage; i <= endPage; i++) {
+    pages.push(i);
+  }
+
+  return (
+    <div className="flex items-center justify-center space-x-2 mt-8">
+      {/* Previous button */}
+      <button
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Previous
+      </button>
+      
+      {/* First page and ellipsis if needed */}
+      {startPage > 1 && (
+        <>
+          <button
+            onClick={() => onPageChange(1)}
+            className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+          >
+            1
+          </button>
+          {startPage > 2 && <span className="px-2 text-gray-500">...</span>}
+        </>
+      )}
+      
+      {/* Page number buttons */}
+      {pages.map(page => (
+        <button
+          key={page}
+          onClick={() => onPageChange(page)}
+          className={`px-3 py-2 text-sm font-medium border rounded-lg ${
+            currentPage === page
+              ? 'bg-blue-600 text-white border-blue-600'
+              : 'text-gray-500 bg-white border-gray-300 hover:bg-gray-50'
+          }`}
+        >
+          {page}
+        </button>
+      ))}
+      
+      {/* Last page and ellipsis if needed */}
+      {endPage < totalPages && (
+        <>
+          {endPage < totalPages - 1 && <span className="px-2 text-gray-500">...</span>}
+          <button
+            onClick={() => onPageChange(totalPages)}
+            className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+          >
+            {totalPages}
+          </button>
+        </>
+      )}
+      
+      {/* Next button */}
+      <button
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Next
+      </button>
+    </div>
+  );
+};
+
+// ============================================================================
+// MAIN VIEW COMPONENTS
+// ============================================================================
+
+/**
+ * DashboardView Component
+ * 
+ * The main dashboard displaying platform overview, search functionality, 
+ * statistics, data visualization, and paginated report listings.
+ * 
+ * Props:
+ * - onNavigate: Function for navigation between pages
+ * 
+ * Features:
+ * - Hero section with prominent search bar
+ * - Statistics cards showing platform metrics
+ * - Interactive data visualization chart
+ * - Paginated report cards
+ * - Responsive grid layouts
+ */
+const DashboardView = ({ onNavigate }) => {
+  // Local state for search and pagination
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const reportsPerPage = 4;
+
+  /**
+   * Handle search submission - navigate to search results page
+   */
+  const handleSearch = (query) => {
+    onNavigate('search', { query });
+  };
+
+  // Calculate pagination values
+  const totalPages = Math.ceil(mockReports.length / reportsPerPage);
+  const startIndex = (currentPage - 1) * reportsPerPage;
+  const paginatedReports = mockReports.slice(startIndex, startIndex + reportsPerPage);
+
+  return (
+    <div className="space-y-8">
+      {/* Hero Section - Prominent header with search functionality */}
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-xl p-8 md:p-12">
+        <div className="text-center space-y-6">
+          <h1 className="text-3xl md:text-4xl font-bold">
+            Explore Global Energy Data & Insights
+          </h1>
+          <p className="text-xl text-blue-100 max-w-2xl mx-auto">
+            Access comprehensive energy reports, data, and analysis from around the world
+          </p>
+          <SearchBar setSearchQuery={setSearchQuery} onSearch={handleSearch} />
+        </div>
+      </div>
+
+      {/* Statistics Cards - Platform metrics in responsive grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+          <h3 className="text-blue-600 font-semibold text-sm uppercase tracking-wide">Total Reports</h3>
+          <p className="text-3xl font-bold text-gray-900 mt-2">{mockReportStats.totalReports}</p>
+        </div>
+        <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+          <h3 className="text-green-600 font-semibold text-sm uppercase tracking-wide">Countries Covered</h3>
+          <p className="text-3xl font-bold text-gray-900 mt-2">{mockReportStats.totalCountries}</p>
+        </div>
+        <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+          <h3 className="text-orange-600 font-semibold text-sm uppercase tracking-wide">Active Projects</h3>
+          <p className="text-3xl font-bold text-gray-900 mt-2">{mockReportStats.activeProjects}</p>
+        </div>
+        <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+          <h3 className="text-purple-600 font-semibold text-sm uppercase tracking-wide">Last Updated</h3>
+          <p className="text-lg font-bold text-gray-900 mt-2">{mockReportStats.lastUpdated}</p>
+        </div>
+      </div>
+
+      {/* Data Visualization - Chart showing topic distribution */}
+      <DataVisualizationWidget />
+
+      {/* Reports Section - Paginated list of report cards */}
+      <div className="space-y-6">
+        <h2 className="text-2xl font-bold text-gray-900">Latest Reports</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {paginatedReports.map(report => (
+            <ReportCard key={report.id} report={report} onNavigate={onNavigate} />
+          ))}
+        </div>
+        {/* Pagination controls for report navigation */}
+        <PaginationControls
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      </div>
+    </div>
+  );
+};
+
+/**
+ * ReportDetailView Component
+ * 
+ * Detailed view of a single report with loading states, metadata, 
+ * AI summary, key points, and download functionality.
+ * 
+ * Props:
+ * - id: Report ID to display
+ * - onNavigate: Function for navigation (used for tag clicks)
+ * 
+ * Features:
+ * - Loading state with skeleton animation
+ * - Error handling for missing reports
+ * - Rich metadata display
+ * - AI-generated summary and key points
+ * - Clickable tags for search navigation
+ * - Download button for report files
+ */
+const ReportDetailView = ({ id, onNavigate }) => {
+  // Local state for loading and report data
+  const [loading, setLoading] = useState(true);
+  const [report, setReport] = useState(null);
+
+  /**
+   * Simulate API call to fetch report details
+   * Uses setTimeout to mimic network delay
+   */
+  useEffect(() => {
+    setLoading(true);
+    
+    // Simulate API delay
+    setTimeout(() => {
+      const reportData = mockReportDetails[id];
+      setReport(reportData);
+      setLoading(false);
+    }, 800);
+  }, [id]);
+
+  // Loading state with skeleton animation
+  if (loading) {
+    return (
+      <div className="bg-white rounded-lg border border-gray-200 p-8 shadow-sm">
+        <div className="animate-pulse space-y-6">
+          <div className="h-8 bg-gray-300 rounded w-3/4"></div>
+          <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+          <div className="space-y-3">
+            <div className="h-4 bg-gray-300 rounded"></div>
+            <div className="h-4 bg-gray-300 rounded w-5/6"></div>
+            <div className="h-4 bg-gray-300 rounded w-4/6"></div>
+          </div>
+        </div>
+        <p className="text-center text-gray-500 mt-8">Loading report details...</p>
+      </div>
+    );
+  }
+
+  // Error state for missing reports
+  if (!report) {
+    return (
+      <div className="bg-white rounded-lg border border-gray-200 p-8 shadow-sm text-center">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Report Not Found</h2>
+        <p className="text-gray-500">The requested report could not be found.</p>
+        <button
+          onClick={() => onNavigate('dashboard')}
+          className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          Return to Dashboard
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+      {/* Report Header - Title, metadata, and download button */}
+      <div className="border-b border-gray-200 p-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">{report.title}</h1>
+        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+          <span><strong>Author:</strong> {report.author}</span>
+          <span><strong>Date:</strong> {new Date(report.date).toLocaleDateString()}</span>
+          <a
+            href={report.downloadUrl}
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Download Report
+          </a>
+        </div>
+        {/* Clickable tags for search navigation */}
+        <div className="mt-4">
+          <TagList 
+            tags={report.tags} 
+            onTagClick={(tag) => onNavigate('search', { query: tag })} 
+          />
+        </div>
+      </div>
+
+      {/* Report Content - AI summary, key points, and content preview */}
+      <div className="p-8 space-y-8">
+        {/* AI-Generated Summary */}
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">AI-Generated Summary</h2>
+          <p className="text-gray-700 leading-relaxed">{report.aiSummary}</p>
+        </div>
+
+        {/* Key Points - Bulleted list with custom styling */}
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Key Points</h2>
+          <ul className="space-y-3">
+            {report.keyPoints.map((point, index) => (
+              <li key={index} className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                <span className="text-gray-700">{point}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Content Preview */}
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Content Preview</h2>
+          <p className="text-gray-700 leading-relaxed">{report.content}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * SearchResultsView Component
+ * 
+ * Displays filtered search results with pagination and result counts.
+ * 
+ * Props:
+ * - query: Search query string
+ * - onNavigate: Function for navigation
+ * 
+ * Features:
+ * - Multi-field search (title, category, tags, author)
+ * - Result count display
+ * - Pagination for large result sets
+ * - Empty state handling
+ * - Responsive grid layout
+ */
+const SearchResultsView = ({ query, onNavigate }) => {
+  // Local state for pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const resultsPerPage = 6;
+
+  /**
+   * Filter reports based on search query
+   * Searches across title, category, tags, and author fields
+   */
+  const filteredReports = mockReports.filter(report => 
+    report.title.toLowerCase().includes(query?.toLowerCase() || '') ||
+    report.category.toLowerCase().includes(query?.toLowerCase() || '') ||
+    report.tags.some(tag => tag.toLowerCase().includes(query?.toLowerCase() || '')) ||
+    report.author.toLowerCase().includes(query?.toLowerCase() || '')
+  );
+
+  // Calculate pagination values
+  const totalPages = Math.ceil(filteredReports.length / resultsPerPage);
+  const startIndex = (currentPage - 1) * resultsPerPage;
+  const paginatedResults = filteredReports.slice(startIndex, startIndex + resultsPerPage);
+
+  /**
+   * Reset to first page when search query changes
+   */
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [query]);
+
+  return (
+    <div className="space-y-6">
+      {/* Search Results Header */}
+      <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          Search Results for: "{query}"
+        </h1>
+        <p className="text-gray-600">
+          Found {filteredReports.length} report{filteredReports.length !== 1 ? 's' : ''}
+        </p>
+      </div>
+
+      {/* Results Display */}
+      {paginatedResults.length > 0 ? (
+        <>
+          {/* Results Grid - Responsive layout */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {paginatedResults.map(report => (
+              <ReportCard key={report.id} report={report} onNavigate={onNavigate} />
+            ))}
+          </div>
+          {/* Pagination for search results */}
+          <PaginationControls
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </>
+      ) : (
+        // Empty state when no results found
+        <div className="bg-white rounded-lg border border-gray-200 p-8 shadow-sm text-center">
+          <p className="text-gray-500 text-lg">No reports found matching your search query.</p>
+          <p className="text-gray-400 mt-2">Try searching with different keywords or browse all reports.</p>
+          <button
+            onClick={() => onNavigate('dashboard')}
+            className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Return to Dashboard
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/**
+ * AboutView Component
+ * 
+ * Static page providing information about the platform.
+ * 
+ * Features:
+ * - Platform description and mission
+ * - Key features list
+ * - Contact information
+ * - Responsive layout
+ */
+const AboutView = () => {
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 p-8 shadow-sm">
+      <h1 className="text-3xl font-bold text-gray-900 mb-6">About the Platform</h1>
+      
+      <div className="space-y-6 text-gray-700">
+        <p className="text-lg leading-relaxed">
+          The Global Energy Data & Insights Platform is a comprehensive resource for energy data, 
+          research, and analysis from around the world. Our mission is to provide accessible, 
+          reliable, and up-to-date energy information to support informed decision-making in 
+          the global energy transition.
+        </p>
+        
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Key Features</h2>
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <li className="flex items-start space-x-3">
+              <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+              <span>Comprehensive energy data coverage across 94+ countries</span>
+            </li>
+            <li className="flex items-start space-x-3">
+              <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+              <span>Real-time insights and analytics</span>
+            </li>
+            <li className="flex items-start space-x-3">
+              <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+              <span>Interactive dashboards and visualizations</span>
+            </li>
+            <li className="flex items-start space-x-3">
+              <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+              <span>Expert analysis and reports</span>
+            </li>
+            <li className="flex items-start space-x-3">
+              <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+              <span>Advanced search and filtering capabilities</span>
+            </li>
+            <li className="flex items-start space-x-3">
+              <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+              <span>Mobile-responsive design</span>
+            </li>
+          </ul>
+        </div>
+        
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Our Impact</h2>
+          <p className="leading-relaxed">
+            Since our launch, we have served over 10,000 researchers, policymakers, and industry 
+            professionals worldwide. Our platform supports evidence-based decision-making that 
+            accelerates the global transition to sustainable energy systems.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * ContactView Component
+ * 
+ * Contact information and form for user inquiries.
+ * 
+ * Features:
+ * - Contact details display
+ * - Office hours information
+ * - Contact form (UI only)
+ * - Responsive grid layout
+ */
+const ContactView = () => {
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 p-8 shadow-sm">
+      <h1 className="text-3xl font-bold text-gray-900 mb-6">Contact Us</h1>
+      
+      <div className="space-y-8">
+        {/* Contact Information Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Get in Touch</h2>
+            <div className="space-y-3 text-gray-600">
+              <div className="flex items-center space-x-3">
+                <span className="font-medium">Email:</span>
+                <a href="mailto:info@energyplatform.org" className="text-blue-600 hover:text-blue-800">
+                  info@energyplatform.org
+                </a>
+              </div>
+              <div className="flex items-center space-x-3">
+                <span className="font-medium">Phone:</span>
+                <span>+1 (555) 123-4567</span>
+              </div>
+              <div className="flex items-start space-x-3">
+                <span className="font-medium">Address:</span>
+                <span>123 Energy Street<br />Data City, DC 12345</span>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Office Hours</h2>
+            <div className="space-y-2 text-gray-600">
+              <p><strong>Monday - Friday:</strong> 9:00 AM - 6:00 PM</p>
+              <p><strong>Saturday:</strong> 10:00 AM - 4:00 PM</p>
+              <p><strong>Sunday:</strong> Closed</p>
+              <p className="text-sm text-gray-500 mt-3">
+                All times are in Eastern Time (ET)
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        {/* Contact Form */}
+        <div className="border-t pt-8">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Send us a Message</h2>
+          <form className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input
+                type="text"
+                placeholder="Your Name"
+                className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="email"
+                placeholder="Your Email"
+                className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <input
+              type="text"
+              placeholder="Subject"
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <textarea
+              placeholder="Your Message"
+              rows="4"
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            ></textarea>
+            <button
+              type="submit"
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Send Message
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
+// HEADER COMPONENT
+// ============================================================================
+
+/**
+ * Header Component
+ * 
+ * Main navigation header with platform branding and navigation links.
+ * 
+ * Props:
+ * - currentPage: Current active page for highlighting
+ * - onNavigate: Function for navigation between pages
+ * 
+ * Features:
+ * - Responsive design for mobile and desktop
+ * - Gradient background with modern styling
+ * - Active page highlighting
+ * - Clickable logo for dashboard navigation
+ */
+const Header = ({ currentPage, onNavigate }) => {
+  return (
+    <header className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-xl">
+      <div className="container mx-auto px-4 py-6">
+        <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+          {/* Platform branding - clickable to return to dashboard */}
+          <div
+            onClick={() => onNavigate('dashboard')}
+            className="cursor-pointer hover:opacity-90 transition-opacity"
+          >
+            <h1 className="text-2xl md:text-3xl font-bold text-center md:text-left">
+              Global Energy Data & Insights Platform
+            </h1>
+            <p className="text-blue-100 text-sm mt-1 text-center md:text-left">
+              Comprehensive Energy Intelligence
+            </p>
+          </div>
+          
+          {/* Navigation menu */}
+          <nav className="flex space-x-8">
+            <button
+              onClick={() => onNavigate('dashboard')}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                currentPage === 'dashboard'
+                  ? 'bg-white text-blue-600 shadow-lg'
+                  : 'hover:bg-blue-500 hover:shadow-md'
+              }`}
+            >
+              Dashboard
+            </button>
+            <button
+              onClick={() => onNavigate('data-management')}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                currentPage === 'data-management'
+                  ? 'bg-white text-blue-600 shadow-lg'
+                  : 'hover:bg-blue-500 hover:shadow-md'
+              }`}
+            >
+              Data Management
+            </button>
+            <button
+              onClick={() => onNavigate('about')}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                currentPage === 'about'
+                  ? 'bg-white text-blue-600 shadow-lg'
+                  : 'hover:bg-blue-500 hover:shadow-md'
+              }`}
+            >
+              About
+            </button>
+            <button
+              onClick={() => onNavigate('contact')}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                currentPage === 'contact'
+                  ? 'bg-white text-blue-600 shadow-lg'
+                  : 'hover:bg-blue-500 hover:shadow-md'
+              }`}
+            >
+              Contact
+            </button>
+          </nav>
+        </div>
+      </div>
+    </header>
+  );
+};
+
+// ============================================================================
+// MAIN APP COMPONENT
+// ============================================================================
+
+/**
+ * Main App Component
+ * 
+ * Root component that manages routing, state, and renders appropriate views.
+ * 
+ * Features:
+ * - Hash-based client-side routing
+ * - URL parameter parsing
+ * - State management for current page and parameters
+ * - Navigation function for all child components
+ * - Responsive layout structure
+ */
+const App = () => {
+  // Main application state
+  const [currentPage, setCurrentPage] = useState('dashboard');
+  const [urlParams, setUrlParams] = useState({});
+
+  /**
+   * Parse hash-based URLs and extract page and parameters
+   * 
+   * Supported URL patterns:
+   * - #dashboard
+   * - #about
+   * - #contact
+   * - #reports/{id}
+   * - #search?q={query}
+   * 
+   * @param {string} hash - URL hash string
+   * @returns {Object} - Object with page and params
+   */
+  const parseHash = (hash) => {
+    if (!hash || hash === '#') return { page: 'dashboard', params: {} };
+    
+    const cleanHash = hash.substring(1); // Remove # prefix
+    
+    // Static pages
+    if (cleanHash === 'dashboard') {
+      return { page: 'dashboard', params: {} };
+    }
+    
+    if (cleanHash === 'about') {
+      return { page: 'about', params: {} };
+    }
+    
+    if (cleanHash === 'contact') {
+      return { page: 'contact', params: {} };
+    }
+    
+    if (cleanHash === 'data-management') {
+      return { page: 'data-management', params: {} };
+    }
+    
+    // Report detail page: #reports/{id}
+    if (cleanHash.startsWith('reports/')) {
+      const reportId = cleanHash.split('/')[1];
+      return { page: 'report-detail', params: { id: reportId } };
+    }
+    
+    // Search results page: #search?q={query}
+    if (cleanHash.startsWith('search?q=')) {
+      const query = cleanHash.split('q=')[1];
+      return { page: 'search', params: { query: decodeURIComponent(query) } };
+    }
+    
+    // Default fallback
+    return { page: 'dashboard', params: {} };
+  };
+
+  /**
+   * Handle hash changes and update application state
+   * Runs on component mount and whenever hash changes
+   */
+  useEffect(() => {
+    const handleHashChange = () => {
+      const { page, params } = parseHash(window.location.hash);
+      setCurrentPage(page);
+      setUrlParams(params);
+    };
+
+    // Handle initial page load
+    handleHashChange();
+
+    // Listen for hash changes (browser back/forward, direct hash changes)
+    window.addEventListener('hashchange', handleHashChange);
+
+    // Cleanup event listener
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  /**
+   * Navigation function used by all child components
+   * 
+   * @param {string} page - Target page name
+   * @param {Object} params - Optional parameters for the page
+   */
+  const handleNavigate = (page, params = {}) => {
+    let hash = `#${page}`;
+    
+    // Build specific hash patterns for different page types
+    if (page === 'report-detail' && params.id) {
+      hash = `#reports/${params.id}`;
+    } else if (page === 'search' && params.query) {
+      hash = `#search?q=${encodeURIComponent(params.query)}`;
+    }
+    
+    // Update browser hash (triggers hashchange event)
+    window.location.hash = hash;
+  };
+
+  /**
+   * Render the appropriate view component based on current page
+   * Passes navigation function and relevant props to each view
+   */
+  const renderCurrentView = () => {
+    switch (currentPage) {
+      case 'dashboard':
+        return <DashboardView onNavigate={handleNavigate} />;
+      case 'report-detail':
+        return <ReportDetailView id={urlParams.id} onNavigate={handleNavigate} />;
+      case 'search':
+        return <SearchResultsView query={urlParams.query} onNavigate={handleNavigate} />;
+      case 'data-management':
+        return <DataManagementDashboard />;
+      case 'about':
+        return <AboutView />;
+      case 'contact':
+        return <ContactView />;
+      default:
+        return <DashboardView onNavigate={handleNavigate} />;
+    }
+  };
+
+  // Main application render
+  return (
+    <div className="min-h-screen bg-gray-100">
+      {/* Header with navigation */}
+      <Header currentPage={currentPage} onNavigate={handleNavigate} />
+      
+      {/* Main content area */}
+      <main className="container mx-auto px-4 py-8">
+        {renderCurrentView()}
+      </main>
+    </div>
+  );
+};
+
+export default App;

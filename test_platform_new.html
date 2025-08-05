@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESMAP AI Platform Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .success { color: #16a34a; }
+        .error { color: #dc2626; }
+        .info { color: #2563eb; }
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #1d4ed8;
+        }
+        #results {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 20px;
+            min-height: 200px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>ESMAP AI Platform - Deployment Test</h1>
+        <p>This page tests the deployed ESMAP AI Platform and its Data Management components.</p>
+        
+        <div class="test-controls">
+            <button onclick="testMainPlatform()">Test Main Platform</button>
+            <button onclick="testDataManagement()">Test Data Management</button>
+            <button onclick="testNavigation()">Test Navigation</button>
+            <button onclick="clearResults()">Clear Results</button>
+        </div>
+        
+        <div id="results">
+            <p class="info">Click the test buttons above to verify platform functionality.</p>
+        </div>
+    </div>
+
+    <script>
+        const results = document.getElementById('results');
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'success' ? 'success' : type === 'error' ? 'error' : 'info';
+            results.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+            results.scrollTop = results.scrollHeight;
+        }
+        
+        function clearResults() {
+            results.innerHTML = '<p class="info">Results cleared. Ready for testing.</p>';
+        }
+        
+        async function testMainPlatform() {
+            log('🚀 Testing Main Platform...', 'info');
+            
+            try {
+                // Test if the main platform loads
+                const response = await fetch('https://esmap-ai-platform.pages.dev');
+                if (response.ok) {
+                    log('✅ Main platform is accessible', 'success');
+                    
+                    const html = await response.text();
+                    
+                    // Check for key elements
+                    if (html.includes('Global Energy Data & Insights Platform')) {
+                        log('✅ Platform title found', 'success');
+                    } else {
+                        log('❌ Platform title missing', 'error');
+                    }
+                    
+                    if (html.includes('Chart.js')) {
+                        log('✅ Chart.js library included', 'success');
+                    } else {
+                        log('⚠️ Chart.js library not found', 'error');
+                    }
+                    
+                    if (html.includes('tailwindcss') || html.includes('tailwind')) {
+                        log('✅ Tailwind CSS detected', 'success');
+                    } else {
+                        log('⚠️ Tailwind CSS not clearly detected', 'info');
+                    }
+                    
+                } else {
+                    log(`❌ Platform not accessible: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Error testing main platform: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testDataManagement() {
+            log('📊 Testing Data Management Components...', 'info');
+            
+            try {
+                // Test the data management hash route
+                const testUrl = 'https://esmap-ai-platform.pages.dev/#data-management';
+                log(`🔍 Testing Data Management route: ${testUrl}`, 'info');
+                
+                // Since we can't directly test the hash routing from here,
+                // we'll check if the necessary components are in the built files
+                const response = await fetch('https://esmap-ai-platform.pages.dev');
+                const html = await response.text();
+                
+                // Look for data management related content
+                if (html.includes('DataManagementDashboard') || html.includes('data-management')) {
+                    log('✅ Data Management components detected in build', 'success');
+                } else {
+                    log('⚠️ Data Management components not clearly detected', 'info');
+                }
+                
+                log('ℹ️ To fully test Data Management:', 'info');
+                log('1. Visit: https://esmap-ai-platform.pages.dev', 'info');
+                log('2. Click "Data Management" in navigation', 'info');
+                log('3. Verify all 9 tabs are working:', 'info');
+                log('   - Data Source Status', 'info');
+                log('   - Data Quality Metrics', 'info');
+                log('   - Data Ingestion Monitor', 'info');
+                log('   - Manual Data Upload', 'info');
+                log('   - Data Source Configuration', 'info');
+                log('   - Validation Results', 'info');
+                log('   - Backup & Failover Status', 'info');
+                log('   - Data Lineage', 'info');
+                log('   - Data Retention Admin', 'info');
+                
+            } catch (error) {
+                log(`❌ Error testing data management: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testNavigation() {
+            log('🧭 Testing Navigation Routes...', 'info');
+            
+            const routes = [
+                'https://esmap-ai-platform.pages.dev/#dashboard',
+                'https://esmap-ai-platform.pages.dev/#about',
+                'https://esmap-ai-platform.pages.dev/#contact',
+                'https://esmap-ai-platform.pages.dev/#data-management'
+            ];
+            
+            log('ℹ️ Testing these routes manually is recommended:', 'info');
+            routes.forEach(route => {
+                log(`📍 ${route}`, 'info');
+            });
+            
+            log('🎯 Manual Test Checklist:', 'info');
+            log('□ Dashboard loads with search and reports', 'info');
+            log('□ About page displays platform information', 'info');
+            log('□ Contact page shows contact form', 'info');
+            log('□ Data Management shows all 9 tabs', 'info');
+            log('□ Navigation buttons highlight correctly', 'info');
+            log('□ Mobile responsive design works', 'info');
+            log('□ No console errors in browser', 'info');
+        }
+        
+        // Auto-run basic test on page load
+        setTimeout(testMainPlatform, 1000);
+    </script>
+</body>
+</html>

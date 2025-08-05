@@ -1,0 +1,38 @@
+name = "esmap-ai-models"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+
+# AI bindings for Cloudflare Workers AI
+[ai]
+binding = "AI"
+
+# Environment variables
+[vars]
+MODEL_CACHE_TTL = "3600"
+INFERENCE_TIMEOUT = "1500"
+MAX_BATCH_SIZE = "10"
+
+# Routes
+routes = [
+  { pattern = "esmap-ai-models.metabilityllc1.workers.dev/*", zone_name = "" }
+]
+
+# Performance optimizations
+[limits]
+cpu_ms = 50
+
+# D1 Database for model metadata and caching
+[[d1_databases]]
+binding = "DB"
+database_name = "esmap-ai-models"
+database_id = "0a680fe3-b40b-4985-a69f-df19b3cd98e7"
+
+# R2 for model artifacts storage
+[[r2_buckets]]
+binding = "MODEL_STORAGE"
+bucket_name = "esmap-ai-model-artifacts"
+
+# KV for caching inference results
+[[kv_namespaces]]
+binding = "INFERENCE_CACHE"
+id = "394058e0a5344928a135acff31cb87fd"

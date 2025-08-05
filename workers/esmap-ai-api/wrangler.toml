@@ -1,0 +1,49 @@
+name = "esmap-ai-api"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[env.production]
+name = "esmap-ai-api"
+
+[env.staging]
+name = "esmap-ai-api-staging"
+
+[vars]
+ENVIRONMENT = "development"
+
+# Cloudflare resources - configured for production deployment
+
+[[r2_buckets]]
+binding = "DATA_BUCKET"
+bucket_name = "esmap-ai-data"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "esmap-ai-db"
+database_id = "e3e7426e-ba94-4507-b422-c3d54610da31"
+
+[[vectorize]]
+binding = "VECTORIZE_INDEX"
+index_name = "esmap-ai-embeddings"
+
+# [ai]
+# binding = "AI"
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "73d708c737f5412c94e5927713d5dac2"
+preview_id = "73d708c737f5412c94e5927713d5dac2"
+
+[[kv_namespaces]]
+binding = "ETL_CACHE"
+id = "ed028cb7707d484eb2ed54de3874b33f"
+preview_id = "ed028cb7707d484eb2ed54de3874b33f"
+
+[[queues.consumers]]
+queue = "etl-queue"
+dead_letter_queue = "etl-dlq"
+
+[[queues.producers]]
+binding = "QUEUE"
+queue = "etl-queue"

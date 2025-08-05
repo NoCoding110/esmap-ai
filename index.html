@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- SEO Meta Tags -->
+    <title>ESMAP AI Platform - Global Energy Data & Insights</title>
+    <meta name="description" content="AI-powered Global Energy Data & Insights Platform supporting ESMAP's mission for universal energy access and decarbonization. Explore comprehensive energy reports, data analytics, and AI-driven solutions." />
+    <meta name="keywords" content="ESMAP, energy access, renewable energy, AI, sustainability, World Bank, decarbonization, energy data, climate resilience" />
+    <meta name="author" content="ESMAP - Energy Sector Management Assistance Program" />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="ESMAP AI Platform - Global Energy Data & Insights" />
+    <meta property="og:description" content="AI-powered platform supporting ESMAP's mission for universal energy access and decarbonization through comprehensive energy data and insights." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://esmap-ai.pages.dev" />
+    <meta property="og:image" content="https://esmap-ai.pages.dev/og-image.png" />
+    <meta property="og:site_name" content="ESMAP AI Platform" />
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="ESMAP AI Platform - Global Energy Data & Insights" />
+    <meta name="twitter:description" content="AI-powered platform for universal energy access and decarbonization" />
+    <meta name="twitter:image" content="https://esmap-ai.pages.dev/twitter-image.png" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    
+    <!-- Chart.js CDN for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js" defer></script>
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#2563eb" />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://esmap-ai.pages.dev" />
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "ESMAP AI Platform",
+      "description": "AI-powered Global Energy Data & Insights Platform supporting universal energy access and decarbonization",
+      "url": "https://esmap-ai.pages.dev",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "ESMAP",
+        "description": "Energy Sector Management Assistance Program"
+      }
+    }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+    
+    <!-- Performance and Analytics (optional) -->
+    <script>
+      // Web Vitals reporting
+      if ('PerformanceObserver' in window) {
+        new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) {
+            if (entry.entryType === 'navigation') {
+              console.log('Page Load Time:', entry.loadEventEnd - entry.loadEventStart);
+            }
+          }
+        }).observe({ entryTypes: ['navigation'] });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "esmap-ai-models",
+  "version": "1.0.0",
+  "description": "ESMAP AI Models deployment on Cloudflare Workers AI",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "node test-models.js"
+  },
+  "dependencies": {
+    "@cloudflare/ai": "^1.0.0"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}

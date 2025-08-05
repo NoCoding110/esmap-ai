@@ -1,0 +1,11 @@
+# Cloudflare Pages Redirects Configuration
+
+# SPA routing - catch all routes and serve index.html
+/*    /index.html   200
+
+# Legacy URL redirects (if needed)
+/home    /    301
+/dashboard    /#dashboard    301
+
+# API routes (if you add Cloudflare Functions later)
+/api/*    /api/:splat    200

@@ -1,0 +1,27 @@
+{
+  "name": "esmap-forecasting-models",
+  "version": "1.0.0",
+  "description": "ESMAP AI Forecasting Models API",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "deploy:staging": "wrangler deploy --env staging",
+    "deploy:production": "wrangler deploy --env production",
+    "create-db": "wrangler d1 create esmap-forecasting-models",
+    "create-kv": "wrangler kv:namespace create CACHE",
+    "create-r2": "wrangler r2 bucket create esmap-model-artifacts",
+    "migrate": "wrangler d1 execute esmap-forecasting-models --file=./migrations/002_create_forecasting_tables.sql",
+    "test": "node test/test-forecasting.js",
+    "test-training": "node test/test-training.js",
+    "test-validation": "node test/test-cross-validation.js",
+    "test-ab": "node test/test-ab-testing.js"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
