@@ -43,7 +43,11 @@
       "WebFetch(domain:cf1515d8.esmap-ai-platform.pages.dev)",
       "Bash(chmod:*)",
       "Bash(npx wrangler kv:namespace create:*)",
-      "Bash(touch:*)"
+      "Bash(touch:*)",
+      "WebFetch(domain:b30577d1.esmap-ai-platform.pages.dev)",
+      "Bash(# Move documentation files\nmv TASK_3*.md docs/completion-reports/\nmv UI_DESIGN_COMPLETE.md docs/completion-reports/\nmv CLAUDE.md docs/\nmv README.md docs/\n\n# Move configuration files\nmv wrangler*.toml config/cloudflare/\nmv tailwind.config.js config/build/\nmv postcss.config.js config/build/\nmv vite.config.js config/build/\nmv jest.config.js config/build/\nmv tsconfig*.json config/build/\nmv package*.json config/env/\n\n# Move test files\nmv test-*.js tests/integration/\nmv *test*.js tests/integration/\nmv load-test-model-serving.js tests/load/\nmv simple-validation-test.js tests/validation/\nmv validate-deployment.js tests/validation/\nmv api-test.js tests/integration/\nmv storage-performance-test.js tests/integration/\nmv etl-performance-report.js tests/integration/\n\n# Move infrastructure files\nmv model-serving-worker.js infrastructure/model-serving/\nmv workers infrastructure/\n\n# Move build artifacts and static files\nmv _headers config/build/\nmv _redirects config/build/)",
+      "Bash(# Move load testing files to correct location\nmv tests/integration/load-test-model-serving.js tests/load/\nmv tests/integration/simple-validation-test.js tests/validation/\n\n# Move HTML test files to appropriate locations\nmv *.html tests/integration/\n\n# Create package.json in root for main project\ncp config/env/package.json ./package.json)",
+      "Bash(# Move build configuration files properly\nmv config/build/_headers ./\nmv config/build/_redirects ./\nmv config/build/tailwind.config.js ./\nmv config/build/postcss.config.js ./\nmv config/build/vite.config.js ./\nmv config/build/jest.config.js ./\nmv config/build/tsconfig*.json ./)"
     ],
     "deny": []
   }

@@ -207,34 +207,34 @@ body {
 .text-large {
   font-size: var(--text-lg);
   line-height: var(--leading-relaxed);
-  color: var(--color-gray-700);
+  color: var(--color-gray-800);
 }
 
 .text-base {
   font-size: var(--text-base);
   line-height: var(--leading-normal);
-  color: var(--color-gray-700);
+  color: var(--color-gray-800);
 }
 
 .text-small {
   font-size: var(--text-sm);
   line-height: var(--leading-normal);
-  color: var(--color-gray-600);
+  color: var(--color-gray-800);
 }
 
 .text-xs {
   font-size: var(--text-xs);
   line-height: var(--leading-normal);
-  color: var(--color-gray-500);
+  color: var(--color-gray-800);
 }
 
 /* Text Utilities */
 .text-muted {
-  color: var(--color-gray-500);
+  color: var(--color-gray-800);
 }
 
 .text-subtle {
-  color: var(--color-gray-400);
+  color: var(--color-gray-700);
 }
 
 .text-mono {
@@ -412,7 +412,7 @@ body {
 }
 
 .input::placeholder {
-  color: var(--color-gray-400);
+  color: var(--color-gray-600);
 }
 
 /* Badges */
@@ -467,7 +467,7 @@ body {
 
 .metric-label {
   font-size: var(--text-sm);
-  color: var(--color-gray-500);
+  color: var(--color-gray-800);
   margin-top: var(--space-1);
 }
 

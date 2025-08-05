@@ -1,0 +1,70 @@
+name = "esmap-model-serving"
+main = "./model-serving-worker.js"
+compatibility_date = "2024-08-05"
+compatibility_flags = ["nodejs_compat"]
+
+# Model Serving Configuration
+[env.production]
+name = "esmap-model-serving"
+routes = [
+  { pattern = "model-serving.esmap-ai.workers.dev/*", zone_name = "esmap-ai.workers.dev" }
+]
+
+# Environment Variables for Model Serving
+[vars]
+ENVIRONMENT = "production"
+CACHE_TTL_DEFAULT = "3600"
+CACHE_TTL_PREDICTIONS = "1800"
+LOAD_BALANCER_MAX_RETRIES = "3"
+MONITORING_ALERT_THRESHOLD_LATENCY = "5000"
+MONITORING_ALERT_THRESHOLD_ERROR_RATE = "0.05"
+AUTO_SCALE_THRESHOLD = "100"
+ENABLE_INTELLIGENT_CACHING = "true"
+ENABLE_COST_OPTIMIZATION = "true"
+ENABLE_AUTO_SCALING = "true"
+
+# KV Namespaces for persistent caching
+[[kv_namespaces]]
+binding = "MODEL_CACHE"
+id = "model_cache_namespace"
+preview_id = "model_cache_preview"
+
+[[kv_namespaces]]
+binding = "METRICS_STORAGE"
+id = "metrics_storage_namespace"
+preview_id = "metrics_storage_preview"
+
+# Durable Objects for state management
+[[durable_objects.bindings]]
+name = "PERFORMANCE_MONITOR"
+class_name = "PerformanceMonitorDO"
+
+[[durable_objects.bindings]]
+name = "LOAD_BALANCER_STATE"
+class_name = "LoadBalancerStateDO"
+
+# R2 Buckets for large model artifacts
+[[r2_buckets]]
+binding = "MODEL_ARTIFACTS"
+bucket_name = "esmap-model-artifacts"
+
+# Analytics Engine for detailed metrics
+[[analytics_engine_datasets]]
+binding = "MODEL_ANALYTICS"
+
+# Resource limits and scaling
+[placement]
+mode = "smart"
+
+[limits]
+cpu_ms = 30000
+memory_mb = 512
+
+# Custom domains and routing
+[triggers]
+crons = ["0 */5 * * * *"]  # Health checks every 5 minutes
+
+# Durable Objects migrations
+[[migrations]]
+tag = "v1"
+new_classes = [ "PerformanceMonitorDO", "LoadBalancerStateDO" ]

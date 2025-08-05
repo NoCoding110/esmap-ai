@@ -1,53 +1,76 @@
 {
   "name": "esmap-ai-platform",
   "version": "1.0.0",
+  "description": "ESMAP AI Platform - AI-powered Global Energy Data & Insights Platform",
   "type": "module",
-  "description": "AI-Powered Global Energy Data & Insights Platform for ESMAP",
-  "keywords": [
-    "energy",
-    "AI",
-    "ESMAP",
-    "sustainability",
-    "renewable-energy",
-    "data-analytics"
-  ],
-  "homepage": "https://esmap-ai.pages.dev",
-  "license": "MIT",
+  "main": "src/main.jsx",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "workers:dev": "cd workers/esmap-ai-api && npm run dev",
-    "workers:deploy": "cd workers/esmap-ai-api && npm run deploy",
-    "workers:deploy:staging": "cd workers/esmap-ai-api && npm run deploy:staging",
-    "workers:deploy:production": "cd workers/esmap-ai-api && npm run deploy:production",
-    "workers:typecheck": "cd workers/esmap-ai-api && npm run typecheck"
+    "test": "jest",
+    "test:unit": "jest tests/unit",
+    "test:integration": "jest tests/integration",
+    "test:load": "node tests/load/load-test-model-serving.js",
+    "test:validation": "node tests/validation/simple-validation-test.js",
+    "test:all": "npm run test && npm run test:integration && npm run test:validation",
+    "deploy": "npm run build && npx wrangler pages deploy dist --project-name esmap-ai-platform",
+    "deploy:workers": "npm run deploy:api && npm run deploy:models && npm run deploy:serving",
+    "deploy:api": "cd infrastructure/workers/esmap-ai-api && npm run deploy",
+    "deploy:models": "cd infrastructure/workers/esmap-ai-models && npm run deploy",
+    "deploy:serving": "cd infrastructure/model-serving && npx wrangler deploy --config ../../config/cloudflare/wrangler-simple.toml",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist node_modules",
+    "docs:serve": "echo 'Documentation available in docs/ directory'",
+    "validate:deployment": "node tests/validation/validate-deployment.js",
+    "health:check": "curl https://esmap-ai-api.metabilityllc1.workers.dev/health && curl https://esmap-model-serving.metabilityllc1.workers.dev/health"
   },
+  "keywords": [
+    "esmap",
+    "ai",
+    "energy",
+    "sustainability",
+    "data-platform",
+    "analytics",
+    "cloudflare-workers",
+    "react",
+    "vite"
+  ],
+  "author": "ESMAP AI Platform Team",
+  "license": "MIT",
   "dependencies": {
-    "chart.js": "^4.4.0",
-    "lucide-react": "^0.536.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "chart.js": "^4.4.0",
+    "lucide-react": "^0.263.1",
+    "react-chartjs-2": "^5.2.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250803.0",
-    "@types/node": "^24.2.0",
-    "@types/react": "^18.3.23",
-    "@types/react-dom": "^18.3.7",
-    "@vitejs/plugin-react": "^4.2.1",
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@vitejs/plugin-react": "^4.1.0",
     "autoprefixer": "^10.4.16",
-    "eslint": "^8.55.0",
+    "eslint": "^8.53.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.5",
-    "postcss": "^8.4.32",
-    "tailwindcss": "^3.3.6",
-    "typescript": "^5.9.2",
-    "vite": "^5.0.8",
-    "wrangler": "^4.27.0"
+    "eslint-plugin-react-refresh": "^0.4.4",
+    "jest": "^29.7.0",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.5",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0"
   },
   "engines": {
-    "node": ">=18.0.0"
-  }
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/esmap/ai-platform"
+  },
+  "bugs": {
+    "url": "https://github.com/esmap/ai-platform/issues"
+  },
+  "homepage": "https://esmap-ai.org"
 }

@@ -41,19 +41,26 @@ The worker is designed to integrate with Cloudflare's edge computing ecosystem:
 
 ## Deployment
 
-### Development
+### From Project Root
 ```bash
+# Deploy API worker only
+npm run deploy:api
+
+# Deploy all workers
+npm run deploy:workers
+
+# Deploy everything (frontend + all workers)
+./scripts/deployment/deploy-all.sh
+```
+
+### From Worker Directory (infrastructure/workers/esmap-ai-api/)
+```bash
+# Development
 npm run deploy
-```
 
-### Staging
-```bash
-npm run deploy:staging
-```
-
-### Production
-```bash
-npm run deploy:production
+# With specific environment config
+npx wrangler deploy --env staging
+npx wrangler deploy --env production
 ```
 
 ## API Endpoints
@@ -83,17 +90,33 @@ npm run deploy:production
 - `npm run deploy` - Deploy to Cloudflare Workers
 - `npm run tail` - View live logs from deployed worker
 
+## Testing
+
+From project root:
+- `npm run test:integration` - Run integration tests
+- `npm run test:validation` - Quick deployment validation
+- `npm run health:check` - Check all service health
+
 ## Project Structure
 
 ```
-src/
-├── index.ts              # Main worker entry point
-├── types.ts              # TypeScript type definitions
-├── routes/
-│   └── health.ts         # Health check route handler
-└── utils/
-    ├── logger.ts         # Structured logging utility
-    └── error-handler.ts  # Error handling and API responses
+infrastructure/workers/esmap-ai-api/
+├── package.json          # Dependencies and scripts
+├── wrangler.toml         # Cloudflare Workers deployment config
+├── src/
+│   ├── index.ts          # Main worker entry point
+│   ├── types.ts          # TypeScript type definitions
+│   ├── routes/           # API route handlers
+│   │   ├── health.ts     # Health check route handler
+│   │   ├── database/     # Database operations
+│   │   ├── etl/          # ETL pipeline handlers
+│   │   ├── storage/      # R2 storage operations
+│   │   ├── vectorize/    # Vector database operations
+│   │   └── resilience/   # Failover and resilience
+│   └── utils/
+│       ├── logger.ts     # Structured logging utility
+│       └── error-handler.ts  # Error handling and API responses
+└── migrations/           # Database migration scripts
 ```
 
 ## Error Handling

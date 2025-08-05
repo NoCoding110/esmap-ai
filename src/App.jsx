@@ -24,6 +24,15 @@ import ESMAPSearch from './components/ESMAPSearch.jsx';
 import DataManagementDashboard from './components/DataManagement/DataManagementDashboard.jsx';
 import AuthManager, { UserProfile } from './components/auth/AuthManager.jsx';
 
+// Modern UI Components
+import ModernHeader from './components/modern/ModernHeader.jsx';
+import ModernDashboard from './components/modern/ModernDashboard.jsx';
+import ChatInterface from './components/modern/ChatInterface.jsx';
+import { PageLoading } from './components/modern/ModernLoading.jsx';
+
+// Import the modern design system
+import './styles/design-system.css';
+
 // ============================================================================
 // PERFORMANCE OPTIMIZATIONS
 // ============================================================================
@@ -1685,6 +1694,14 @@ const App = () => {
         return { page: 'search', params: {} };
       }
 
+      if (cleanHash === 'api') {
+        return { page: 'api', params: {} };
+      }
+
+      if (cleanHash === 'chat') {
+        return { page: 'chat', params: {} };
+      }
+
       if (cleanHash.startsWith('country/')) {
         const countryCode = cleanHash.split('/')[1];
         return { page: 'country', params: { countryCode } };
@@ -1737,7 +1754,18 @@ const App = () => {
   }, []);
 
   const handleNavigate = (page, params = {}) => {
-    let hash = `#${page}`;
+    // Handle modern header navigation IDs
+    const pageMapping = {
+      'dashboard': 'dashboard',
+      'countries': 'esmap',
+      'data': 'data-management',
+      'ai': 'chat',
+      'search': 'search',
+      'api': 'api'
+    };
+
+    const mappedPage = pageMapping[page] || page;
+    let hash = `#${mappedPage}`;
     
     if (page === 'report-detail' && params.id) {
       hash = `#reports/${params.id}`;
@@ -1782,6 +1810,10 @@ const App = () => {
         return <CountryProfile countryCode={urlParams.countryCode} onClose={() => handleNavigate('esmap')} />;
       case 'report-detail':
         return <ReportDetailView id={urlParams.id} {...viewProps} />;
+      case 'api':
+        return <ApiTestingInterface />;
+      case 'chat':
+        return <ChatInterface />;
       case 'about':
         return <AboutView />;
       case 'contact':
@@ -1792,29 +1824,28 @@ const App = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen gradient-bg flex items-center justify-center">
-        <div className="text-center text-white">
-          <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <h2 className="text-xl font-semibold mb-2">Loading ESMAP AI Platform</h2>
-          <p className="text-blue-100">Preparing your energy intelligence dashboard...</p>
-        </div>
-      </div>
-    );
+    return <PageLoading />;
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header 
-        currentPage={currentPage} 
-        onNavigate={handleNavigate}
+      <ModernHeader 
+        activeTab={currentPage}
+        setActiveTab={handleNavigate}
         user={user}
-        onShowAuth={handleShowAuth}
-        onLogout={handleLogout}
+        onUserProfileClick={() => setShowAuth(true)}
+        onNotificationClick={() => console.log('Notifications clicked')}
+        onSettingsClick={() => console.log('Settings clicked')}
       />
-      <main className="container mx-auto px-4 py-8">
+      <main className="flex-1">
         <Suspense fallback={<LoadingSpinner size="large" />}>
-          {renderCurrentView()}
+          {currentPage === 'dashboard' ? (
+            <ModernDashboard />
+          ) : (
+            <div className="container py-8">
+              {renderCurrentView()}
+            </div>
+          )}
         </Suspense>
       </main>
       
@@ -1824,9 +1855,6 @@ const App = () => {
         onAuthSuccess={handleAuthSuccess}
         onClose={() => setShowAuth(false)}
       />
-      
-      {/* API Testing Interface */}
-      <ApiTestingInterface />
       
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12 mt-16">

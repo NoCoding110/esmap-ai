@@ -1,0 +1,25 @@
+name = "esmap-model-serving"
+main = "../../infrastructure/model-serving/model-serving-worker.js"
+compatibility_date = "2024-08-05"
+compatibility_flags = ["nodejs_compat"]
+
+# Environment Variables for Model Serving
+[vars]
+ENVIRONMENT = "production"
+CACHE_TTL_DEFAULT = "3600"
+CACHE_TTL_PREDICTIONS = "1800"
+LOAD_BALANCER_MAX_RETRIES = "3"
+MONITORING_ALERT_THRESHOLD_LATENCY = "5000"
+MONITORING_ALERT_THRESHOLD_ERROR_RATE = "0.05"
+AUTO_SCALE_THRESHOLD = "100"
+ENABLE_INTELLIGENT_CACHING = "true"
+ENABLE_COST_OPTIMIZATION = "true"
+ENABLE_AUTO_SCALING = "true"
+
+# Resource limits and scaling
+[placement]
+mode = "smart"
+
+[limits]
+cpu_ms = 30000
+memory_mb = 512

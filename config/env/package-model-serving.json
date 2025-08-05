@@ -1,0 +1,52 @@
+{
+  "name": "esmap-model-serving",
+  "version": "1.0.0",
+  "description": "ESMAP AI Model Serving Infrastructure with Intelligent Caching and Load Balancing",
+  "main": "model-serving-worker.js",
+  "type": "module",
+  "scripts": {
+    "deploy": "wrangler deploy --config wrangler-model-serving.toml",
+    "dev": "wrangler dev --config wrangler-model-serving.toml",
+    "test": "node load-test-model-serving.js",
+    "test:light": "node load-test-model-serving.js --duration=60000 --users=10",
+    "test:heavy": "node load-test-model-serving.js --duration=600000 --users=100",
+    "logs": "wrangler tail esmap-model-serving",
+    "health": "curl https://esmap-model-serving.workers.dev/health",
+    "metrics": "curl https://esmap-model-serving.workers.dev/metrics",
+    "cache:clear": "curl -X DELETE https://esmap-model-serving.workers.dev/admin/cache",
+    "scale:up": "curl -X POST https://esmap-model-serving.workers.dev/admin/scaling -d '{\"action\":\"scale_up\"}'",
+    "scale:down": "curl -X POST https://esmap-model-serving.workers.dev/admin/scaling -d '{\"action\":\"scale_down\"}'",
+    "validate": "node validate-deployment.js"
+  },
+  "keywords": [
+    "esmap",
+    "ai",
+    "model-serving",
+    "cloudflare-workers",
+    "load-balancing",
+    "caching",
+    "monitoring",
+    "auto-scaling",
+    "energy",
+    "sustainability"
+  ],
+  "author": "ESMAP AI Platform",
+  "license": "MIT",
+  "dependencies": {
+    "@cloudflare/workers-types": "^4.20240909.0"
+  },
+  "devDependencies": {
+    "wrangler": "^3.78.12"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/esmap/ai-platform"
+  },
+  "bugs": {
+    "url": "https://github.com/esmap/ai-platform/issues"
+  },
+  "homepage": "https://esmap-ai.org"
+}
